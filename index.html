@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aura & Essence | Premium Perfumery</title>
+    <title>Ahli Perfume | Premium Perfumery</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -60,15 +60,15 @@
         .nav-hidden { transform: translateY(-100%); }
         .nav-visible { transform: translateY(0); }
 
-         nav {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0.7rem 1.5rem;   /* Smaller navbar */
-      display: flex;
-    justify-content: space-between;
-     align-items: center;
-}
-
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0.7rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
 
         .logo {
             font-family: var(--font-serif);
@@ -78,9 +78,19 @@
             color: var(--text-dark);
         }
 
+        /* Hamburger Menu - Hidden by default */
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            z-index: 1001;
+        }
+
         .nav-links {
             display: flex;
             gap: 2.5rem;
+            margin: 0 auto;
         }
 
         .nav-links a {
@@ -500,6 +510,23 @@
             background: white;
         }
 
+        /* Success message */
+        .success-message {
+            display: none;
+            background: #10b981;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            text-align: center;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         footer { padding: 2rem; text-align: center; background-color: #f1f5f9; color: var(--text-light); font-size: 0.85rem; }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
@@ -507,12 +534,90 @@
         @media (max-width: 768px) {
             .hero-title { font-size: 3rem; }
             .hero-tagline { font-size: 1.1rem; }
-            .nav-links { display: none; } 
-            .modal-content { flex-direction: column; overflow-y: scroll; height: 90vh;}
-            .modal-left { padding: 0; max-height: 250px; }
-            .modal-right { padding: 1.5rem; }
-            .action-buttons { flex-direction: column; }
-            .cart-sidebar { width: 100%; }
+            
+            /* MOBILE NAVBAR */
+            nav {
+                position: relative;
+                padding: 1rem 1.5rem;
+            }
+            
+            .hamburger {
+                display: block !important;
+                cursor: pointer;
+                font-size: 1.5rem;
+                color: var(--text-dark);
+                z-index: 1001;
+            }
+            
+            .logo {
+                flex-grow: 1;
+                text-align: left;
+                font-size: 1.6rem;
+            }
+            
+            /* Mobile Navbar Menu - Comes from RIGHT side */
+            .nav-links { 
+                display: none; 
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                height: 100vh;
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(15px);
+                flex-direction: column;
+                padding: 5rem 2rem 2rem 2rem;
+                gap: 1.5rem;
+                box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+                z-index: 999;
+                transition: right 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+                margin: 0;
+            }
+            
+            .nav-links.active {
+                display: flex;
+                right: 0;
+            }
+            
+            .nav-links a {
+                font-size: 1.2rem;
+                padding: 0.8rem 0;
+                border-bottom: 1px solid rgba(0,0,0,0.05);
+                text-align: left;
+            }
+            
+            .nav-links a:last-child {
+                border-bottom: none;
+            }
+            
+            .nav-links a::after {
+                display: none;
+            }
+            
+            /* Cart sidebar */
+            .cart-sidebar { 
+                width: 100%; 
+            }
+            
+            .modal-content { 
+                flex-direction: column; 
+                overflow-y: scroll; 
+                height: 90vh;
+                max-width: 95%;
+            }
+            
+            .modal-left { 
+                padding: 0; 
+                max-height: 250px; 
+            }
+            
+            .modal-right { 
+                padding: 1.5rem; 
+            }
+            
+            .action-buttons { 
+                flex-direction: column; 
+            }
         }
     </style>
 </head>
@@ -520,11 +625,14 @@
 
     <header id="navbar">
         <nav>
-            <a href="#" class="logo">Aura & Essence</a>
-            <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#products">Collection</a></li>
-                <li><a href="#contact">Contact</a></li>
+            <a href="#" class="logo">Ahli Perfume</a>
+            <div class="hamburger" id="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home" onclick="closeMobileMenu()">Home</a></li>
+                <li><a href="#products" onclick="closeMobileMenu()">Collection</a></li>
+                <li><a href="#contact" onclick="closeMobileMenu()">Contact</a></li>
             </ul>
             <div class="cart-icon" onclick="toggleCart()">
                 <i class="fas fa-shopping-bag"></i>
@@ -560,7 +668,7 @@
 
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h1 class="hero-title">Luxury Perfume <h1>
+            <h1 class="hero-title">Luxury Perfume</h1>
             <p class="hero-tagline">Experience fragrances that speak without words.</p>
             <a href="#products" class="btn">Explore Collection</a>
         </div>
@@ -596,25 +704,35 @@
         <div class="section-header">
             <h2 class="section-title">Get in Touch</h2>
         </div>
-        <form class="contact-form">
-            <div class="form-group"><label>Name</label><input type="text" placeholder="Your Name"></div>
-            <div class="form-group"><label>Email</label><input type="email" placeholder="Your Email"></div>
-            <div class="form-group"><label>Message</label><textarea rows="5" placeholder="Your Message"></textarea></div>
-            <button type="button" class="btn">Send Message</button>
+        <form class="contact-form" id="contactForm">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="contact-name" placeholder="Your Name" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="contact-email" placeholder="Your Email" required>
+            </div>
+            <div class="form-group">
+                <label>Message</label>
+                <textarea rows="5" id="contact-message" placeholder="Your Message" required></textarea>
+            </div>
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle"></i> Message sent successfully! Redirecting to WhatsApp...
+            </div>
+            <button type="button" class="btn" onclick="sendContactMessage()">Send Message</button>
         </form>
     </section>
 
     <footer>
-        <p>&copy; 2023 Aura & Essence. All rights reserved.</p>
+        <p>&copy; 2023 Ahli Perfume. All rights reserved.</p>
     </footer>
 
     <script>
         // --- DATA ---
         const products = [
-            { id: 1, name: "Ciel Bleu", price: 2499, image: "https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=1000&auto=format&fit=crop", description: "A fresh, airy fragrance with notes of sea salt, white musk, and bergamot." },
-            { id: 2, name: "Velvet Night", price: 3200, image: "https://images.unsplash.com/photo-1594035910387-406691aa9303?q=80&w=1000&auto=format&fit=crop", description: "Deep and mysterious. A blend of jasmine, dark chocolate, and amber wood." },
-            { id: 3, name: "Rose Éternelle", price: 1850, image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=1000&auto=format&fit=crop", description: "A modern twist on classic rose. Soft petals combined with pink pepper and vanilla." },
-            { id: 4, name: "Golden Oud", price: 4500, image: "https://images.unsplash.com/photo-1519669011783-4eaa95fa1b7d?q=80&w=1000&auto=format&fit=crop", description: "Luxurious and rich. Authentic Oud wood mixed with warm spices and leather." },
+            { id: 1, name: "REDLOOFI", price: 499, image: "img1.jpg", description: "A fresh, airy fragrance with notes of sea salt, white musk, and bergamot." },
+        
         ];
 
         // --- STATE ---
@@ -627,6 +745,8 @@
         const closeModal = document.querySelector('.close-modal');
         const navbar = document.getElementById('navbar');
         const cartCountEl = document.getElementById('cart-count');
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
         
         // Cart Sidebar Elements
         const cartSidebar = document.getElementById('cart-sidebar');
@@ -642,12 +762,20 @@
         const addToCartBtn = document.getElementById('add-to-cart-btn');
         const orderNowBtn = document.getElementById('order-now-btn');
 
+        // Contact Form Elements
+        const contactForm = document.getElementById('contactForm');
+        const contactName = document.getElementById('contact-name');
+        const contactEmail = document.getElementById('contact-email');
+        const contactMessage = document.getElementById('contact-message');
+        const successMessage = document.getElementById('successMessage');
+
         // --- INIT ---
         function init() {
             renderProducts();
             setupNavbarScroll();
             setupBackgroundSlider();
             setupEventListeners();
+            setupMobileMenu();
         }
 
         function setupBackgroundSlider() {
@@ -663,7 +791,7 @@
         function renderProducts() {
             grid.innerHTML = products.map(product => `
                 <div class="product-card" onclick="openProduct(${product.id})">
-                    <div class="card-img-container"><img src="${product.image}" alt="${product.name}"></div>
+                    <div class="card-img-container"><img src="${product.image}" alt="${product.name}" onerror="this.src='https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=1000&auto=format&fit=crop'"></div>
                     <div class="card-details">
                         <h3 class="card-title">${product.name}</h3>
                         <p class="card-price">₹${product.price.toLocaleString()}</p>
@@ -687,15 +815,59 @@
             });
         }
 
+        // --- MOBILE MENU LOGIC ---
+        function setupMobileMenu() {
+            hamburger.addEventListener('click', toggleMobileMenu);
+            
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!navLinks.contains(e.target) && !hamburger.contains(e.target)) {
+                    closeMobileMenu();
+                }
+            });
+
+            // Close mobile menu on scroll
+            window.addEventListener('scroll', () => {
+                if (navLinks.classList.contains('active')) {
+                    closeMobileMenu();
+                }
+            });
+        }
+
+        function toggleMobileMenu(e) {
+            if (e) e.stopPropagation();
+            navLinks.classList.toggle('active');
+            // Toggle hamburger icon
+            const icon = hamburger.querySelector('i');
+            if (navLinks.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        }
+
+        function closeMobileMenu() {
+            navLinks.classList.remove('active');
+            const icon = hamburger.querySelector('i');
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+        }
+
         // --- MODAL LOGIC ---
         window.openProduct = (id) => {
             currentProduct = products.find(p => p.id === id);
             modalImg.src = currentProduct.image;
+            modalImg.onerror = function() {
+                this.src = 'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=1000&auto=format&fit=crop';
+            }
             modalTitle.textContent = currentProduct.name;
             modalDesc.textContent = currentProduct.description;
             modalPrice.textContent = `₹${currentProduct.price.toLocaleString()}`;
             modal.style.display = "flex";
             setTimeout(() => modal.classList.add('show'), 10);
+            closeMobileMenu(); // Close mobile menu when opening product
         };
 
         function closeModalFunc() {
@@ -707,6 +879,7 @@
         function toggleCart() {
             cartSidebar.classList.toggle('open');
             cartOverlay.classList.toggle('open');
+            closeMobileMenu(); // Close mobile menu when opening cart
             if (cartSidebar.classList.contains('open')) {
                 renderCartItems();
             }
@@ -749,7 +922,7 @@
                 total += item.price;
                 return `
                     <div class="cart-item">
-                        <img src="${item.image}" alt="${item.name}">
+                        <img src="${item.image}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=1000&auto=format&fit=crop'">
                         <div class="cart-item-details">
                             <div class="cart-item-title">${item.name}</div>
                             <div class="cart-item-price">₹${item.price.toLocaleString()}</div>
@@ -765,8 +938,8 @@
         // --- WHATSAPP ORDERING ---
         function orderSingleOnWhatsApp() {
             if(!currentProduct) return;
-            const phoneNumber = "919876543210"; 
-            const message = `Hi! I want to order: \n\n1. ${currentProduct.name} - ₹${currentProduct.price}\n\nTotal: ₹${currentProduct.price}`;
+            const phoneNumber = "918891519975"; // WhatsApp number
+            const message = `Hi! I want to order from Ahli Perfume:\n\n*Product:* ${currentProduct.name}\n*Price:* ₹${currentProduct.price}\n\n*Total:* ₹${currentProduct.price}\n\nPlease confirm my order.`;
             window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
         }
 
@@ -776,18 +949,55 @@
                 return;
             }
 
-            const phoneNumber = "919876543210"; // CHANGE THIS NUMBER
-            let message = "Hi! I would like to place an order for the following items:\n\n";
+            const phoneNumber = "918891519975"; // WhatsApp number
+            let message = "Hi! I would like to place an order from Ahli Perfume:\n\n";
             let total = 0;
 
             cart.forEach((item, index) => {
-                message += `${index + 1}. ${item.name} - ₹${item.price}\n`;
+                message += `${index + 1}. *${item.name}* - ₹${item.price}\n`;
                 total += item.price;
             });
 
-            message += `\n*Total Amount: ₹${total.toLocaleString()}*`;
+            message += `\n*Total Amount: ₹${total.toLocaleString()}*\n\nPlease confirm my order.`;
             
             window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        // --- CONTACT FORM WHATSAPP ---
+        function sendContactMessage() {
+            // Get form values
+            const name = contactName.value.trim();
+            const email = contactEmail.value.trim();
+            const message = contactMessage.value.trim();
+            
+            // Validate form
+            if (!name || !email || !message) {
+                alert("Please fill in all fields.");
+                return;
+            }
+            
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert("Please enter a valid email address.");
+                return;
+            }
+            
+            // Show success message
+            successMessage.style.display = 'block';
+            
+            // Create WhatsApp message
+            const phoneNumber = "918891519975"; // WhatsApp number
+            const whatsappMessage = `*New Contact Form Submission - Ahli Perfume*\n\n*Name:* ${name}\n*Email:* ${email}\n*Message:* ${message}\n\n*Date:* ${new Date().toLocaleString()}`;
+            
+            // Wait 2 seconds then redirect to WhatsApp
+            setTimeout(() => {
+                window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
+                
+                // Reset form
+                contactForm.reset();
+                successMessage.style.display = 'none';
+            }, 2000);
         }
 
         // --- EVENT LISTENERS ---
@@ -798,6 +1008,14 @@
             });
             addToCartBtn.addEventListener('click', addToCart);
             orderNowBtn.addEventListener('click', orderSingleOnWhatsApp);
+            
+            // Add Enter key support for contact form
+            contactForm.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    sendContactMessage();
+                }
+            });
         }
 
         init();
